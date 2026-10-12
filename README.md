@@ -7,6 +7,8 @@
 ![Maven](https://img.shields.io/badge/Maven-3.9%2B-red?logo=apachemaven)
 ![Build](https://img.shields.io/badge/Build-Passing-success)
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/24eg109b47-dev/foodiehub-backend)
+
 > **FoodieHub** is an enterprise-grade, database-driven backend application for online food delivery and restaurant management. Developed as a high-performance Java 17 + Spring Boot 3 service with Spring MVC, Spring Data JPA, Hibernate, Spring Security, and MySQL.
 
 ---
