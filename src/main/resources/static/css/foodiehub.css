@@ -1,0 +1,96 @@
+/* FoodieHub Custom Professional Styles */
+:root {
+    --primary-color: #ff4757;
+    --primary-hover: #ff6b81;
+    --secondary-color: #2ed573;
+    --dark-color: #2f3542;
+    --light-bg: #f8f9fa;
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
+    color: var(--dark-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--primary-color) !important;
+}
+
+.navbar-brand i {
+    color: var(--primary-color);
+}
+
+/* Cards */
+.fh-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.fh-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.fh-card-img {
+    height: 180px;
+    object-fit: cover;
+}
+
+/* Badges */
+.badge-pending { background-color: #ffa502; color: #fff; }
+.badge-confirmed { background-color: #70a1ff; color: #fff; }
+.badge-preparing { background-color: #eccc68; color: #2f3542; }
+.badge-out-for-delivery { background-color: #1e90ff; color: #fff; }
+.badge-delivered { background-color: #2ed573; color: #fff; }
+.badge-cancelled { background-color: #ff4757; color: #fff; }
+.badge-approved { background-color: #2ed573; color: #fff; }
+.badge-rejected { background-color: #ff4757; color: #fff; }
+
+/* Dashboard Cards */
+.stat-card {
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+}
+
+.bg-stat-1 { background: linear-gradient(135deg, #ff4757, #ff6b81); }
+.bg-stat-2 { background: linear-gradient(135deg, #2ed573, #26de81); }
+.bg-stat-3 { background: linear-gradient(135deg, #1e90ff, #70a1ff); }
+.bg-stat-4 { background: linear-gradient(135deg, #ffa502, #eccc68); }
+
+/* Rating Stars */
+.star-rating i {
+    color: #ffa502;
+}
+
+/* Footer */
+footer {
+    background-color: #2f3542;
+    color: #a4b0be;
+}
+
+footer a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: var(--primary-color);
+}

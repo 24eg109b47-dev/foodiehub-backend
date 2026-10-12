@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Order #' + ${order.id} + ' - FoodieHub'">Order Details - FoodieHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/foodiehub.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/messages :: messages}"></div>
+
+    <main class="container my-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-0">Order <span th:text="'#' + ${order.id}">#1</span></h2>
+                <small class="text-muted" th:text="'Placed on ' + ${#temporals.format(order.orderDate, 'dd MMMM yyyy, HH:mm')}">Date</small>
+            </div>
+            <div>
+                <span class="badge fs-6 px-3 py-2" th:classappend="'badge-' + ${#strings.toLowerCase(order.status)}" th:text="${order.status}">PENDING</span>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <!-- Items Table -->
+                <div class="card fh-card border-0 p-4 mb-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-shop text-danger"></i> Restaurant: <span th:text="${order.restaurant.name}">Restaurant Name</span></h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Price at Order</th>
+                                    <th>Quantity</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item : ${order.orderItems}">
+                                    <td th:text="${item.menuItem.name}">Item Name</td>
+                                    <td th:text="'₹' + ${#numbers.formatDecimal(item.price, 1, 2)}">₹0.00</td>
+                                    <td th:text="${item.quantity}">1</td>
+                                    <td class="fw-bold" th:text="'₹' + ${#numbers.formatDecimal(item.subtotal, 1, 2)}">₹0.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Order Cancellation Form (Only when PENDING) -->
+                <div th:if="${order.status.name() == 'PENDING'}" class="card fh-card border-danger p-4 mb-4 bg-light">
+                    <h5 class="fw-bold text-danger"><i class="bi bi-x-circle"></i> Cancel Order</h5>
+                    <p class="small text-muted mb-3">Orders can only be cancelled while they are in PENDING status.</p>
+                    <form th:action="@{/customer/orders/{id}/cancel(id=${order.id})}" method="post">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this order?');">
+                            <i class="bi bi-x-lg"></i> Confirm Cancellation
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Review Form (Only when DELIVERED and not reviewed) -->
+                <div th:if="${order.status.name() == 'DELIVERED' && !isReviewed}" class="card fh-card border-success p-4 mb-4 bg-light">
+                    <h5 class="fw-bold text-success"><i class="bi bi-star"></i> Rate & Review Your Order</h5>
+                    <form th:action="@{/customer/orders/{id}/review(id=${order.id})}" th:object="${reviewDto}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label font-weight-bold">Rating (1 to 5 Stars)</label>
+                            <select th:field="*{rating}" class="form-select" style="max-width: 200px;">
+                                <option value="5">5 - Excellent ★★★★★</option>
+                                <option value="4">4 - Very Good ★★★★☆</option>
+                                <option value="3">3 - Average ★★★☆☆</option>
+                                <option value="2">2 - Poor ★★☆☆☆</option>
+                                <option value="1">1 - Terrible ★☆☆☆☆</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label font-weight-bold">Comments</label>
+                            <textarea th:field="*{comment}" class="form-control" rows="3" placeholder="How was your food and delivery experience?"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success"><i class="bi bi-send"></i> Submit Review</button>
+                    </form>
+                </div>
+
+                <div th:if="${isReviewed}" class="alert alert-success" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i> Thank you! You have submitted a review for this order.
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Delivery & Payment Summary -->
+                <div class="card fh-card border-0 p-4 mb-4">
+                    <h5 class="fw-bold border-bottom pb-2 mb-3"><i class="bi bi-geo-alt text-danger"></i> Delivery Details</h5>
+                    <div th:if="${order.deliveryAddress != null}">
+                        <p class="mb-1 fw-bold" th:text="${order.deliveryAddress.label}">Home</p>
+                        <p class="small text-muted mb-1" th:text="${order.deliveryAddress.addressLine} + ', ' + ${order.deliveryAddress.city} + ', ' + ${order.deliveryAddress.state} + ' - ' + ${order.deliveryAddress.pincode}">Address</p>
+                        <p class="small text-muted mb-0"><i class="bi bi-telephone"></i> <span th:text="${order.deliveryAddress.phone}">Phone</span></p>
+                    </div>
+                </div>
+
+                <div class="card fh-card border-0 p-4">
+                    <h5 class="fw-bold border-bottom pb-2 mb-3"><i class="bi bi-wallet2 text-primary"></i> Payment Details</h5>
+                    <div th:if="${order.payment != null}">
+                        <p class="mb-1">Method: <strong th:text="${order.payment.paymentMethod}">COD</strong></p>
+                        <p class="mb-1">Status: <span class="badge" th:classappend="${order.payment.paymentStatus.name() == 'PAID' ? 'bg-success' : 'bg-warning'}" th:text="${order.payment.paymentStatus}">PAID</span></p>
+                        <p class="small text-muted mb-3">Ref: <code th:text="${order.payment.transactionReference}">DEMO-123</code></p>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between fs-5 fw-bold">
+                        <span>Total Paid</span>
+                        <span class="text-danger" th:text="'₹' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">₹0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/foodiehub.js}"></script>
+</body>
+</html>

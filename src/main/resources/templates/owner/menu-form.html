@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isEdit ? 'Edit Menu Item - FoodieHub' : 'Add Menu Item - FoodieHub'}">Menu Item Form - FoodieHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/foodiehub.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/messages :: messages}"></div>
+
+    <main class="container my-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card fh-card border-0 p-4">
+                    <h3 class="fw-bold mb-4">
+                        <i class="bi bi-journal-plus text-danger"></i> 
+                        <span th:text="${isEdit ? 'Edit Menu Item' : 'Add New Menu Item'}">Add Menu Item</span>
+                    </h3>
+
+                    <form th:action="${isEdit} ? @{/owner/menu/edit/{id}(id=${menuItemDto.id})} : @{/owner/menu/add}" 
+                          th:object="${menuItemDto}" method="post">
+                        
+                        <input type="hidden" th:field="*{id}">
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label font-weight-bold">Item Name</label>
+                            <input type="text" class="form-control" th:field="*{name}" placeholder="e.g. Paneer Butter Masala" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="categoryId" class="form-label font-weight-bold">Category</label>
+                            <select th:field="*{categoryId}" class="form-select">
+                                <option value="">-- Select Category --</option>
+                                <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}">Category</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="price" class="form-label font-weight-bold">Price (₹)</label>
+                            <input type="number" step="0.01" class="form-control" th:field="*{price}" placeholder="250.00" th:classappend="${#fields.hasErrors('price')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label font-weight-bold">Description</label>
+                            <textarea class="form-control" th:field="*{description}" rows="3" placeholder="Ingredients and details..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="image" class="form-label font-weight-bold">Image URL (Optional)</label>
+                            <input type="text" class="form-control" th:field="*{image}" placeholder="https://images.unsplash.com/...">
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" th:field="*{available}" id="available">
+                            <label class="form-check-label font-weight-bold" for="available">Available for ordering</label>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/owner/menu}" class="btn btn-outline-secondary w-50">Cancel</a>
+                            <button type="submit" class="btn btn-danger w-50 font-weight-bold"><i class="bi bi-save"></i> Save Item</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/foodiehub.js}"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Order Management - FoodieHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/foodiehub.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/messages :: messages}"></div>
+
+    <main class="container my-4">
+        <h2 class="fw-bold mb-4"><i class="bi bi-receipt text-danger"></i> Incoming Orders Management</h2>
+
+        <div class="card fh-card border-0 p-3">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer & Address</th>
+                            <th>Items Purchased</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                            <th>Current Status</th>
+                            <th>Update Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${orders}">
+                            <td><strong th:text="'#' + ${order.id}">#1</strong></td>
+                            <td>
+                                <strong th:text="${order.customer.name}">Customer</strong><br>
+                                <small class="text-muted" th:if="${order.deliveryAddress != null}" th:text="${order.deliveryAddress.addressLine} + ', ' + ${order.deliveryAddress.city}">Address</small>
+                            </td>
+                            <td>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li th:each="item : ${order.orderItems}">
+                                        <span th:text="${item.menuItem.name} + ' x ' + ${item.quantity}">Item</span>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td class="fw-bold text-danger" th:text="'₹' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">₹0.00</td>
+                            <td>
+                                <span th:if="${order.payment != null}" class="badge bg-secondary" th:text="${order.payment.paymentMethod} + ' (' + ${order.payment.paymentStatus} + ')'">COD</span>
+                            </td>
+                            <td>
+                                <span class="badge fs-6" th:classappend="'badge-' + ${#strings.toLowerCase(order.status)}" th:text="${order.status}">PENDING</span>
+                            </td>
+                            <td>
+                                <form th:if="${order.status.name() != 'DELIVERED' && order.status.name() != 'CANCELLED'}"
+                                      th:action="@{/owner/orders/{id}/status(id=${order.id})}" method="post" class="d-flex gap-1">
+                                    <select name="status" class="form-select form-select-sm" style="min-width: 140px;">
+                                        <option th:if="${order.status.name() == 'PENDING'}" value="CONFIRMED">CONFIRMED</option>
+                                        <option th:if="${order.status.name() == 'CONFIRMED'}" value="PREPARING">PREPARING</option>
+                                        <option th:if="${order.status.name() == 'PREPARING'}" value="OUT_FOR_DELIVERY">OUT_FOR_DELIVERY</option>
+                                        <option th:if="${order.status.name() == 'OUT_FOR_DELIVERY'}" value="DELIVERED">DELIVERED</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-arrow-right-short"></i> Update</button>
+                                </form>
+                                <small th:if="${order.status.name() == 'DELIVERED' || order.status.name() == 'CANCELLED'}" class="text-muted">Completed</small>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(orders)}">
+                            <td colspan="7" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox display-3 text-secondary"></i>
+                                <p class="lead mt-2">No incoming orders for your restaurant yet.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/foodiehub.js}"></script>
+</body>
+</html>

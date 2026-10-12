@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - FoodieHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/foodiehub.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/messages :: messages}"></div>
+
+    <main class="container my-4">
+        <h2 class="fw-bold mb-4"><i class="bi bi-credit-card text-danger"></i> Checkout</h2>
+
+        <form th:action="@{/customer/order/place}" th:object="${checkoutDto}" method="post">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <!-- Delivery Address Selection -->
+                    <div class="card fh-card border-0 p-4 mb-4">
+                        <h4 class="fw-bold mb-3"><i class="bi bi-geo-alt text-danger"></i> 1. Select Delivery Address</h4>
+                        
+                        <div th:if="${addresses != null && !addresses.isEmpty()}">
+                            <div class="row g-3">
+                                <div th:each="addr : ${addresses}" class="col-md-6">
+                                    <div class="card p-3 h-100 border">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" th:field="*{addressId}" th:value="${addr.id}" th:id="'addr_' + ${addr.id}" required>
+                                            <label class="form-check-label w-100" th:for="'addr_' + ${addr.id}">
+                                                <strong th:text="${addr.label != null && !addr.label.isEmpty() ? addr.label : 'Address'}">Home</strong>
+                                                <span th:if="${addr.defaultAddress}" class="badge bg-success ms-2">Default</span>
+                                                <p class="small text-muted mb-0 mt-1" th:text="${addr.addressLine} + ', ' + ${addr.city} + ', ' + ${addr.state} + ' - ' + ${addr.pincode}">Address text</p>
+                                                <p class="small text-muted mb-0"><i class="bi bi-telephone"></i> <span th:text="${addr.phone}">Phone</span></p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:if="${addresses == null || addresses.isEmpty()}" class="alert alert-warning my-2" role="alert">
+                            No delivery address found. Please <a th:href="@{/customer/addresses}" class="alert-link">add an address</a> before placing an order.
+                        </div>
+                    </div>
+
+                    <!-- Payment Method Selection -->
+                    <div class="card fh-card border-0 p-4">
+                        <h4 class="fw-bold mb-3"><i class="bi bi-wallet2 text-danger"></i> 2. Select Payment Method</h4>
+                        
+                        <div class="form-check mb-3 p-3 border rounded">
+                            <input class="form-check-input" type="radio" th:field="*{paymentMethod}" value="CASH_ON_DELIVERY" id="payCod" required>
+                            <label class="form-check-label fw-bold" for="payCod">
+                                <i class="bi bi-cash-coin text-success fs-5 me-2"></i> Cash On Delivery (COD)
+                                <small class="d-block text-muted fw-normal ms-4">Pay in cash when your order arrives at your door.</small>
+                            </label>
+                        </div>
+
+                        <div class="form-check p-3 border rounded">
+                            <input class="form-check-input" type="radio" th:field="*{paymentMethod}" value="DEMO_ONLINE" id="payOnline" required>
+                            <label class="form-check-label fw-bold" for="payOnline">
+                                <i class="bi bi-credit-card-2-front text-primary fs-5 me-2"></i> Demo Online Payment (Instant Verification)
+                                <small class="d-block text-muted fw-normal ms-4">Simulates instant online payment gateway approval generating transaction reference.</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card fh-card border-0 p-4">
+                        <h5 class="fw-bold border-bottom pb-3">Order Summary</h5>
+                        <div th:each="item : ${cart.items}" class="d-flex justify-content-between mb-2 small">
+                            <span th:text="${item.menuItem.name} + ' x ' + ${item.quantity}">Item</span>
+                            <span th:text="'₹' + ${#numbers.formatDecimal(item.subtotal, 1, 2)}">₹0.00</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-4 fs-5 fw-bold">
+                            <span>Total Payable</span>
+                            <span class="text-danger" th:text="'₹' + ${#numbers.formatDecimal(total, 1, 2)}">₹0.00</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger btn-lg w-100 font-weight-bold" th:disabled="${addresses == null || addresses.isEmpty()}">
+                            <i class="bi bi-bag-check"></i> PLACE ORDER
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/foodiehub.js}"></script>
+</body>
+</html>

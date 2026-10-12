@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FoodieHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/foodiehub.css}">
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/messages :: messages}"></div>
+
+    <main class="container my-auto py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card fh-card shadow p-4 border-0">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-person-circle fs-1 text-danger"></i>
+                        <h3 class="fw-bold mt-2">Sign In to FoodieHub</h3>
+                        <p class="text-muted small">Enter your credentials to access your account</p>
+                    </div>
+
+                    <div th:if="${param.error}" class="alert alert-danger" role="alert">
+                        Invalid email or password, or your account has been deactivated.
+                    </div>
+                    <div th:if="${param.logout}" class="alert alert-info" role="alert">
+                        You have been logged out successfully.
+                    </div>
+
+                    <form th:action="@{/login}" method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label font-weight-bold">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="username" name="username" placeholder="name@example.com" required autofocus>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100 py-2 font-weight-bold"><i class="bi bi-box-arrow-in-right"></i> Log In</button>
+                    </form>
+
+                    <div class="mt-4 text-center">
+                        <p class="mb-1 text-muted small">Demo Accounts:</p>
+                        <small class="d-block text-muted">Customer: <code>customer@foodiehub.com</code> / <code>customer123</code></small>
+                        <small class="d-block text-muted">Owner: <code>owner@foodiehub.com</code> / <code>owner123</code></small>
+                        <small class="d-block text-muted mb-3">Admin: <code>admin@foodiehub.com</code> / <code>admin123</code></small>
+                        <p class="small text-muted">Don't have an account? <a th:href="@{/register}" class="text-danger fw-bold">Register here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/foodiehub.js}"></script>
+</body>
+</html>
